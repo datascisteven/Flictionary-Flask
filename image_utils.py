@@ -8,15 +8,6 @@ from PIL import ImageOps
 
 
 def view_image(img, filename = 'image'):
-    """
-    Function to view numpy image with matplotlib.
-    The function saves the image as png.
-    INPUT:
-        img - (numpy array) image from train dataset with size (1, 784)
-        filename - name of a file where to save the image
-    OUTPUT:
-        None
-    """
     fig, ax = plt.subplots(figsize=(6, 9))
     ax.imshow(img.reshape(96, 96).squeeze())
     ax.axis('off')
@@ -24,13 +15,6 @@ def view_image(img, filename = 'image'):
     plt.savefig(filename + '.png')
 
 def convert_to_PIL(img):
-    """
-    Function to convert numpy (1, 6400) image to PIL image.
-    INPUT:
-        img - (numpy array) image from train dataset with size (1, 6400)
-    OUTPUT:
-        pil_img - (PIL Image) 80x80 image
-    """
     img_r = img.reshape(96, 96)
 
     pil_img = Image.new('RGB', (96, 96), 'white')
@@ -43,43 +27,7 @@ def convert_to_PIL(img):
 
     return pil_img
 
-def rotate_image(src_im, angle = 45, size = (96, 96)):
-    """
-    Function to rotate PIL Image file
-    INPUT:
-        src_im - (PIL Image) image to be rotated
-        angle - angle to rotate the image
-        size - (tuple) size of the output image
-    OUTPUT:
-        dst_im - (PIL Image) rotated image
-    """
-    dst_im = Image.new("RGBA", size, "white")
-    src_im = src_im.convert('RGBA')
-
-    rot = src_im.rotate(angle)
-    dst_im.paste(rot, (0, 0), rot)
-
-    return dst_im
-
-def flip_image(src_im):
-    """
-    Function to flip a PIL Image file.
-    INPUT:
-        scr_im - (PIL Image) 80x80 image to be flipped
-    OUTPUT:
-        dst_im - (PIL Image) flipped image
-    """
-    dst_im = src_im.transpose(Image.FLIP_LEFT_RIGHT)
-    return dst_im
-
 def convert_to_np(pil_img):
-    """
-    Function to convert PIL Image to numpy array.
-    INPUT:
-        pil_img - (PIL Image) 28x28 image to be converted
-    OUTPUT:
-        img - (numpy array) converted image with shape (80, 80)
-    """
     pil_img = pil_img.convert('RGB')
 
     img = np.zeros((96, 96))
@@ -92,60 +40,8 @@ def convert_to_np(pil_img):
     return img
 
 
-def plot_image(image, label_name):
-    """
-    Helper function to plot 1 part of animated image.
-    """
-    fig, ax = plt.subplots(figsize=(8,8))
-
-    plt.imshow(image) #plot the data
-    plt.xticks([]) #removes numbered labels on x-axis
-    plt.yticks([])
-
-    ax.set_title(label_name)
-
-    dims = (fig.canvas.get_width_height()[0] * 2, fig.canvas.get_width_height()[1] * 2)
-
-    # Used to return the plot as an image array
-    fig.canvas.draw() # draw the canvas, cache the renderer
-    image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
-    #image  = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    image  = image.reshape(dims[::-1] + (3,))
-
-    return image
-
-def create_animated_images(X_train, y_train, label, label_name):
-    """
-    Function creates animated gif with images of a certain label.
-    INPUT:
-        X_train - (numpy array) training dataset
-        y_train - (numpy array) labels for training dataset
-        label - (int) label for images
-        label_name - (str) name for images label
-
-    OUTPUT: None
-    """
-    # get images of a certain label
-    indices = np.where(y_train == label)
-    X = pd.DataFrame(X_train)
-
-    images = []
-    for label_num in range(0, 47):
-        image = X.iloc[indices[0][label_num]].as_matrix().reshape(96, 96)  #reshape images
-        images.append(image)
-
-    # save plotted images into a gif
-    kwargs_write = {'fps':1.0, 'quantizer':'nq'}
-    imageio.mimsave('./'+ label_name + '.gif', [plot_image(i, label_name) for i in images], fps=1)
-
 def crop_image(image):
-    """
-    Crops image (crops out white spaces).
-    INPUT:
-        image - PIL image of original size to be cropped
-    OUTPUT:
-        cropped_image - PIL image cropped to the center  and resized to (28, 28)
-    """
+
     cropped_image = image
 
     # get image size
@@ -189,7 +85,7 @@ def crop_image(image):
     # paste to the center of a resulting image
     dst_im.paste(cropped_image, offset, cropped_image)
 
-    #resize to 80,80
+    #resize
     dst_im.thumbnail((96, 96), Image.ANTIALIAS)
 
     return dst_im
