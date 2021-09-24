@@ -9,6 +9,8 @@ import cv2
 import time
 import os
 import json
+import random
+import seaborn as sns
 
 from matplotlib.pyplot import imshow
 import matplotlib
@@ -17,6 +19,7 @@ import matplotlib.pyplot as plt
 import plotly
 import chart_studio.plotly as py
 import plotly.graph_objs as go
+from keras.preprocessing.image import img_to_array
 
 # import image processing
 import sys
@@ -35,6 +38,10 @@ label_dict = {0:'ant', 1:'bat', 2:'bear', 3:'bee', 4:'butterfly',
               40:'snake', 41:'spider', 42:'squirrel', 43:'swan', 44:'tiger', 
               45:'whale', 46:'zebra'}
 
+def animal_picker():
+    random_key = random.randint(0, 47)
+    random_animal = label_dict[random_key]
+    return random_animal, random_key
 
 def loading_model(filepath='model/h5/model_h5.h5'):
     print("Loading model from {} \n".format(filepath))
@@ -44,30 +51,16 @@ def loading_model(filepath='model/h5/model_h5.h5'):
 
 def make_prediction(model, input):
     input = cv2.resize(input, (96, 96))
-    pred = model.predict(np.expand_dims(input, axis=0))[0]
-    preds = (-pred).argsort()[:10]
-    top_10 = [label_dict[x] for x in preds]
-    label = preds[0]
-    label_name = top_10[0]
-    return label, label_name, preds
-
-# def view_classify(img, preds):
-#     preds = preds.squeeze()
-#     fig, (ax1, ax2) = plt.subplots(figsize=(12,18), ncols=2)
-#     ax1.imshow(img.squeeze())
-#     ax1.axis('off')
-#     ax2.barh(np.arange(47), preds)
-#     ax2.set_aspect(0.1)
-#     ax2.set_yticks(np.arange(10))
-#     ax2.set_yticklabels(['bee', 'cat', 'cow', 'dog', 'duck', 'horse', 'pig', 'rabbit', 'snake', 'whale'], size='small');
-#     ax2.set_title('Class Probability')
-#     ax2.set_xlim(0, 1.1)
-
-#     plt.tight_layout()
-
-#     ts = time.time()
-#     plt.savefig('prediction' + str(ts) + '.png')
-
+    img_array = img_to_array(input)
+    img_array = np.expand_dims(img_array, 0)
+    preds = model.predict(img_array)[0]
+    ind = (-preds).argsort()[:10]
+    top_10_animals = [label_dict[x] for x in ind]
+    label = ind[0]
+    label_name = top_10_animals[0]
+    preds.sort()
+    top_10_values = preds[::-1][:10]
+    return label, label_name, ind, preds, top_10_animals, top_10_values
 
 app = Flask(__name__)
 # load model
@@ -76,7 +69,8 @@ model, graph = loading_model()
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    random_animal, random_key = animal_picker()
+    return render_template('index.html', random_animal=random_animal)
 
 
 @app.route('/go/<dataURL>')
@@ -87,29 +81,28 @@ def pred(dataURL):
     dataURL = dataURL.replace('_', '/')
     dataURL = dataURL.replace('-', '=')
 
-    # get the base64 string and  convert string to bytes
+    # get the base64 string and convert string to bytes
     image_b64_str = dataURL
     byte_data = base64.b64decode(image_b64_str)
     image_data = BytesIO(byte_data)
     
-    # open Image with PIL and save original image as png (for debugging)
+    # open Image with PIL and convert image
     img = Image.open(image_data)
-    ts = time.time()
-    img.save('image' + str(ts) + '.png', 'PNG')
-
-    # convert image to RGBA and preprocess image for model
     img = img.convert("RGBA")
-    image_cropped = crop_image(img) # crop image and resize to 28x28
-    image_normalized = normalize_image(image_cropped) # normalize color after crop
-    img_rgb = convert_to_rgb(image_normalized) # convert image from RGBA to RGB
-    image_np = convert_to_np(img_rgb) # convert image to numpy
+    image_cropped = crop_image(img) 
+    image_normalized = normalize_image(image_cropped) 
+    img_rgb = convert_to_rgb(image_normalized)
+    image_np = convert_to_np(img_rgb) 
 
     # apply model and print prediction
-    label, label_num, preds = make_prediction(model, image_np) # need to change
+    label, label_num, ind, preds, top_10_animals, top_10_values = make_prediction(model, image_np)
     print("This is a {}".format(label_num))
 
-    # save classification results as a diagram
-    # view_classify(image_np, preds)
+    plt.style.use('tableau-colorblind10')
+    x = top_10_animals
+    y = top_10_values
+    sns.barplot(y, x)
+    plt.savefig('top10.png')
 
     # create plotly visualization
     graphs = [
@@ -118,7 +111,7 @@ def pred(dataURL):
             'data': [
                 go.Bar(
                         x = preds.ravel().tolist(),
-                        y = [label_dict[pred] for pred in preds],
+                        y = [label_dict[pred] for pred in ind[::-1]],
                         orientation = 'h')
             ],
 
@@ -144,6 +137,7 @@ def pred(dataURL):
         ids=ids, # plotly graph ids
         graphJSON=graphJSON, # json plotly graphs
         dataURL = dataURL # image to display with result
+
     )
 
 if __name__ == '__main__':

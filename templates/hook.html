@@ -4,7 +4,7 @@
 {% block message %}
 <div class="row justify-content-center">
   <div class="alert alert-success ml-5 col-10" role="alert">
-      <h4 class="alert-heading">Is this a {{result}}?</h4>
+    <center><h4 class="alert-heading">Is this a {{result}}?</h4></center>
   </div>
 </div>
 <div class="row">
@@ -31,13 +31,13 @@
 
 {% block body %}
 <script type="text/javascript">
-    // render plot with probabilities for each class
-    const graphs = {{graphJSON | safe}};
-    const ids = {{ids | safe}};
-    for(let i in graphs) {
-        Plotly.plot(ids[i], graphs[i].data, graphs[i].layout);
-    }
-    console.log('graphs rendered');
+  // render plot with probabilities for each class
+  const graphs = {{graphJSON | safe}};
+  const ids = {{ids | safe}};
+  for(let i in graphs) {
+      Plotly.plot(ids[i], graphs[i].data, graphs[i].layout);
+  }
+  console.log('graphs rendered');
 </script>
 
 <script type="text/javascript">

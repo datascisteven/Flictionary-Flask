@@ -22,15 +22,26 @@
       <style>
           .navbar-brand {
               font-family: 'Permanent Marker', cursive;
-              font-size: 40px;
+              font-size: 30px;
           }
           .text-center {
               font-family: 'Itim', cursive;
-              font-size: 30px; 
+              font-size: 20px; 
           }
           .class-categories {
               font-family: 'Patrick Hand SC', cursive;
-              font-size: 40px;
+              font-size: 80px;
+              font-weight: 800;
+          }
+          .jumbotron {
+              padding: 1rem 1rem;
+              margin-bottom: 1rem;
+          }
+          .navbar.navbar-expand-lg.navbar-dark.bg-dark {
+              background-color: #385f87;
+          }
+          .alert-heading {
+              font-weight: 800;
           }
       </style>
   </head>
@@ -168,9 +179,9 @@
     <!-- page header -->
     <div class="jumbotron" style="background-image: url({{url_for('static', filename='jumbotron.png')}})">
         <div class="container">
-            <h1 class="class-categories">BEE...CAT...COW...DOG...DUCK...HORSE...PIG...RABBIT...SNAKE...WHALE</h1>
-            <p class="text-center">Draw your best rendition of any animals above.</br>
-                                   Click "Done!" to find out whether you're the next Picasso!</p>
+            <center><h1 class="class-categories">{{random_animal}}</h1></center>
+            <p class="text-center">Draw your best rendition of the animal shown  above.</br>
+            Click "Done!" to find out whether you're the next Picasso!</p>
         </div>
     </div>
  
