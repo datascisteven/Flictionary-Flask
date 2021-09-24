@@ -3,26 +3,21 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 import base64
-import re
 from io import BytesIO
 import cv2
-import time
 import os
 import json
 import random
 import seaborn as sns
 
-from matplotlib.pyplot import imshow
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import plotly
-import chart_studio.plotly as py
 import plotly.graph_objs as go
 from keras.preprocessing.image import img_to_array
 
 # import image processing
-import sys
 from image_utils import crop_image, normalize_image, convert_to_rgb, convert_to_np
 from tensorflow.keras.models import load_model
 
@@ -43,7 +38,7 @@ def animal_picker():
     random_animal = label_dict[random_key]
     return random_animal, random_key
 
-def loading_model(filepath='model/h5/model_h5.h5'):
+def loading_model(filepath='model/model_h5.h5'):
     print("Loading model from {} \n".format(filepath))
     model = load_model(filepath)
     graph = tf.compat.v1.get_default_graph()
