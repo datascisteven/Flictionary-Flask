@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 import numpy as np 
 import tensorflow as tf
 from PIL import Image
@@ -15,7 +15,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import plotly
 import plotly.graph_objs as go
-from keras.preprocessing.image import img_to_array
+from tensorflow.keras.preprocessing.image import img_to_array
 
 # import image processing
 from image_utils import crop_image, normalize_image, convert_to_rgb, convert_to_np
@@ -137,4 +137,4 @@ def pred(dataURL):
 
 if __name__ == '__main__':
     port=int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)

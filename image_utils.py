@@ -1,8 +1,5 @@
-
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import imageio
 from PIL import Image
 from PIL import ImageOps
 
@@ -13,6 +10,7 @@ def view_image(img, filename = 'image'):
     ax.axis('off')
 
     plt.savefig(filename + '.png')
+
 
 def convert_to_PIL(img):
     img_r = img.reshape(96, 96)
@@ -26,6 +24,7 @@ def convert_to_PIL(img):
                 pixels[j, i] = (255 - int(img_r[i, j] * 255), 255 - int(img_r[i, j] * 255), 255 - int(img_r[i, j] * 255))
 
     return pil_img
+
 
 def convert_to_np(pil_img):
     pil_img = pil_img.convert('RGB')
@@ -41,7 +40,6 @@ def convert_to_np(pil_img):
 
 
 def crop_image(image):
-
     cropped_image = image
 
     # get image size
@@ -90,16 +88,8 @@ def crop_image(image):
 
     return dst_im
 
+
 def normalize(arr):
-    """
-    Function performs the linear normalizarion of the array.
-    https://stackoverflow.com/questions/7422204/intensity-normalization-of-image-using-pythonpil-speed-issues
-    http://en.wikipedia.org/wiki/Normalization_%28image_processing%29
-    INPUT:
-        arr - orginal numpy array
-    OUTPUT:
-        arr - normalized numpy array
-    """
     arr = arr.astype('float')
     # Do not touch the alpha channel
     for i in range(3):
@@ -110,29 +100,14 @@ def normalize(arr):
             arr[...,i] *= (255.0/(maxval-minval))
     return arr
 
+
 def normalize_image(image):
-    """
-    Function performs the normalization of the image.
-    https://stackoverflow.com/questions/7422204/intensity-normalization-of-image-using-pythonpil-speed-issues
-    INPUT:
-        image - PIL image to be normalized
-    OUTPUT:
-        new_img - PIL image normalized
-    """
     arr = np.array(image)
     new_img = Image.fromarray(normalize(arr).astype('uint8'),'RGBA')
     return new_img
 
+
 def alpha_composite(front, back):
-    """Alpha composite two RGBA images.
-
-    Source: http://stackoverflow.com/a/9166671/284318
-
-    Keyword Arguments:
-    front -- PIL RGBA Image object
-    back -- PIL RGBA Image object
-
-    """
     front = np.asarray(front)
     back = np.asarray(back)
     result = np.empty(front.shape, dtype='float')
@@ -151,30 +126,13 @@ def alpha_composite(front, back):
     result = Image.fromarray(result, 'RGBA')
     return result
 
+
 def alpha_composite_with_color(image, color=(255, 255, 255)):
-    """
-    Helper function to convert RGBA to RGB.
-    https://stackoverflow.com/questions/9166400/convert-rgba-png-to-rgb-with-pil
-
-    Alpha composite an RGBA image with a single color image of the
-    specified color and the same size as the original image.
-
-    Keyword Arguments:
-    image -- PIL RGBA Image object
-    color -- Tuple r, g, b (default 255, 255, 255)
-
-    """
     back = Image.new('RGBA', size=image.size, color=color + (255,))
     return alpha_composite(image, back)
 
+
 def convert_to_rgb(image):
-    """
-    Converts RGBA PIL image into RGB image.
-    INPUT:
-        image - PIL RGBA image
-    OUTPUT:
-        image_rgb - PIL image converted to RGB
-    """
     image_rgb = alpha_composite_with_color(image)
     image_rgb.convert('RGB')
 
