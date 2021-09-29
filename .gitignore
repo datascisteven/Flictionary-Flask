@@ -109,6 +109,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+virt/
+.elasticbeanstalk/
+aws-elastic-beanstalk-cli-setup/
 
 # Spyder project settings
 .spyderproject
@@ -131,3 +134,8 @@ dmypy.json
 dockerfile
 docker-compose.yml
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

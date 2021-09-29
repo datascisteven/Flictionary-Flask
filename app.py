@@ -101,22 +101,12 @@ def pred(dataURL):
     # create plotly visualization
     graphs = [
         #plot with probabilities for each class of images
-        {
-            'data': [
-                go.Bar(
-                        x = preds.ravel().tolist(),
-                        y = [label_dict[pred] for pred in ind[::-1]],
-                        orientation = 'h')
-            ],
-
-            'layout': {
-                'title': 'Class Probabilities',
-                'yaxis': {
-                    'title': "Classes"
-                },
-                'xaxis': {
-                    'title': "Probability",
-                }
+        {'data': [go.Bar(x = preds.ravel().tolist(),
+                         y = [label_dict[pred] for pred in ind[::-1]],
+                         orientation = 'h')],
+         'layout': {'title': 'Class Probabilities',
+                    'yaxis': {'title': "Classes"},
+                    'xaxis': {'title': "Probability", }
             }
         }]
 
@@ -130,10 +120,8 @@ def pred(dataURL):
         result = label_num, # predicted class label
         ids=ids, # plotly graph ids
         graphJSON=graphJSON, # json plotly graphs
-        dataURL = dataURL # image to display with result
-
-    )
+        dataURL = dataURL # image to display with result)
 
 if __name__ == '__main__':
     port=int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
