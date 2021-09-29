@@ -8,18 +8,17 @@ import cv2
 import os
 import json
 import random
-import seaborn as sns
 
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import plotly
 import plotly.graph_objs as go
 from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.models import load_model
 
 # import image processing
 from image_utils import crop_image, normalize_image, convert_to_rgb, convert_to_np
-from tensorflow.keras.models import load_model
+
 
 # Dictionary with label codes
 label_dict = {0:'ant', 1:'bat', 2:'bear', 3:'bee', 4:'butterfly', 
@@ -93,11 +92,11 @@ def pred(dataURL):
     label, label_num, ind, preds, top_10_animals, top_10_values = make_prediction(model, image_np)
     print("This is a {}".format(label_num))
 
-    plt.style.use('tableau-colorblind10')
-    x = top_10_animals
-    y = top_10_values
-    sns.barplot(y, x)
-    plt.savefig('top10.png')
+    # plt.style.use('tableau-colorblind10')
+    # x = top_10_animals
+    # y = top_10_values
+    # sns.barplot(y, x)
+    # plt.savefig('top10.png')
 
     # create plotly visualization
     graphs = [
